@@ -1,0 +1,52 @@
+<?php
+
+namespace {{moduleNamespace}}\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+
+class {{module}}ServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
+        $this->loadRoutes();
+        $this->loadViews();
+        $this->loadMigrations();
+    }
+
+    /**
+     * Load module routes.
+     */
+    protected function loadRoutes(): void
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
+    }
+
+    /**
+     * Load module views.
+     */
+    protected function loadViews(): void
+    {
+        $this->loadViewsFrom(__DIR__ . '/../Views', '{{moduleLower}}s');
+    }
+
+    /**
+     * Load module migrations.
+     */
+    protected function loadMigrations(): void
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+    }
+}

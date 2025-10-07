@@ -1,0 +1,41 @@
+<?php
+
+namespace {{moduleNamespace}}\Database\Seeders;
+
+use {{moduleNamespace}}\Models\{{module}};
+use Illuminate\Database\Seeder;
+
+class {{module}}Seeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Create sample {{moduleLower}}s
+        ${{moduleLower}}s = [
+            [
+                'name' => 'Sample {{module}} 1',
+                'description' => 'This is the first sample {{moduleLower}} for testing purposes.',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Sample {{module}} 2',
+                'description' => 'This is the second sample {{moduleLower}} for testing purposes.',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Inactive {{module}}',
+                'description' => 'This is an inactive sample {{moduleLower}} for testing purposes.',
+                'is_active' => false,
+            ],
+        ];
+
+        foreach (${{moduleLower}}s as ${{moduleLower}}Data) {
+            {{module}}::create(${{moduleLower}}Data);
+        }
+
+        // You can also use the factory if you have one
+        // {{module}}::factory()->count(10)->create();
+    }
+}

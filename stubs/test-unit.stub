@@ -1,0 +1,90 @@
+<?php
+
+namespace {{moduleNamespace}}\Tests\Unit;
+
+use {{moduleNamespace}}\Models\{{module}};
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class {{module}}Test extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * Test {{moduleLower}} model can be created.
+     */
+    public function test_{{moduleLower}}_model_can_be_created(): void
+    {
+        ${{moduleLower}} = new {{module}}();
+
+        $this->assertInstanceOf({{module}}::class, ${{moduleLower}});
+    }
+
+    /**
+     * Test {{moduleLower}} fillable attributes.
+     */
+    public function test_{{moduleLower}}_fillable_attributes(): void
+    {
+        ${{moduleLower}} = new {{module}}();
+
+        $expectedFillable = ['name', 'description'];
+
+        $this->assertEquals($expectedFillable, ${{moduleLower}}->getFillable());
+    }
+
+    /**
+     * Test {{moduleLower}} table name.
+     */
+    public function test_{{moduleLower}}_table_name(): void
+    {
+        ${{moduleLower}} = new {{module}}();
+
+        $this->assertEquals('{{moduleSnake}}', ${{moduleLower}}->getTable());
+    }
+
+    /**
+     * Test {{moduleLower}} casts.
+     */
+    public function test_{{moduleLower}}_casts(): void
+    {
+        ${{moduleLower}} = {{module}}::factory()->create([
+            'is_active' => true,
+        ]);
+
+        $this->assertTrue(${{moduleLower}}->is_active);
+        $this->assertInstanceOf(\Carbon\Carbon::class, ${{moduleLower}}->created_at);
+        $this->assertInstanceOf(\Carbon\Carbon::class, ${{moduleLower}}->updated_at);
+    }
+
+    /**
+     * Test {{moduleLower}} active scope.
+     */
+    public function test_{{moduleLower}}_active_scope(): void
+    {
+        // Create active and inactive {{moduleLower}}s
+        $active{{module}} = {{module}}::factory()->create(['is_active' => true]);
+        $inactive{{module}} = {{module}}::factory()->create(['is_active' => false]);
+
+        // Test active scope
+        $active{{module}}s = {{module}}::active()->get();
+
+        $this->assertCount(1, $active{{module}}s);
+        $this->assertTrue($active{{module}}s->first()->is_active);
+    }
+
+    /**
+     * Test {{moduleLower}} can be saved with minimal data.
+     */
+    public function test_{{moduleLower}}_can_be_saved_with_minimal_data(): void
+    {
+        ${{moduleLower}} = {{module}}::create([
+            'name' => 'Test {{module}}',
+        ]);
+
+        $this->assertDatabaseHas('{{moduleSnake}}', [
+            'id' => ${{moduleLower}}->id,
+            'name' => 'Test {{module}}',
+            'is_active' => true, // default value
+        ]);
+    }
+}

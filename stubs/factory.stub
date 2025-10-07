@@ -1,0 +1,73 @@
+<?php
+
+namespace {{moduleNamespace}}\Database\Factories;
+
+use {{moduleNamespace}}\Models\{{module}};
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\{{moduleNamespace}}\Models\{{module}}>
+ */
+class {{module}}Factory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = {{module}}::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->sentence(3),
+            'description' => $this->faker->paragraph(),
+            'is_active' => $this->faker->boolean(80), // 80% chance of being active
+        ];
+    }
+
+    /**
+     * Indicate that the {{moduleLower}} is active.
+     */
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the {{moduleLower}} is inactive.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Indicate that the {{moduleLower}} has a specific name.
+     */
+    public function withName(string $name): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $name,
+        ]);
+    }
+
+    /**
+     * Indicate that the {{moduleLower}} has a specific description.
+     */
+    public function withDescription(string $description): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'description' => $description,
+        ]);
+    }
+}

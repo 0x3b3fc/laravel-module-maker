@@ -1,0 +1,88 @@
+<?php
+
+namespace {{moduleNamespace}}\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
+use {{moduleNamespace}}\Models\{{module}};
+
+class {{module}}Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
+    {
+        ${{moduleLower}}s = {{module}}::paginate(15);
+
+        return view('{{moduleLower}}s.index', compact('{{moduleLower}}s'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        return view('{{moduleLower}}s.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): Response
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        {{module}}::create($validated);
+
+        return redirect()->route('{{moduleLower}}s.index')
+            ->with('success', '{{module}} created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{module}} ${{moduleLower}}): View
+    {
+        return view('{{moduleLower}}s.show', compact('{{moduleLower}}'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit({{module}} ${{moduleLower}}): View
+    {
+        return view('{{moduleLower}}s.edit', compact('{{moduleLower}}'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, {{module}} ${{moduleLower}}): Response
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        ${{moduleLower}}->update($validated);
+
+        return redirect()->route('{{moduleLower}}s.index')
+            ->with('success', '{{module}} updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{module}} ${{moduleLower}}): Response
+    {
+        ${{moduleLower}}->delete();
+
+        return redirect()->route('{{moduleLower}}s.index')
+            ->with('success', '{{module}} deleted successfully.');
+    }
+}

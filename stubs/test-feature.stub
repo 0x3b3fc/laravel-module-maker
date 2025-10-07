@@ -1,0 +1,110 @@
+<?php
+
+namespace {{moduleNamespace}}\Tests\Feature;
+
+use {{moduleNamespace}}\Models\{{module}};
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class {{module}}Test extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * Test {{moduleLower}} index page loads successfully.
+     */
+    public function test_{{moduleLower}}_index_page_loads_successfully(): void
+    {
+        $response = $this->get(route('{{moduleLower}}s.index'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('{{moduleLower}}s.index');
+    }
+
+    /**
+     * Test {{moduleLower}} create page loads successfully.
+     */
+    public function test_{{moduleLower}}_create_page_loads_successfully(): void
+    {
+        $response = $this->get(route('{{moduleLower}}s.create'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('{{moduleLower}}s.create');
+    }
+
+    /**
+     * Test {{moduleLower}} can be created successfully.
+     */
+    public function test_{{moduleLower}}_can_be_created_successfully(): void
+    {
+        ${{moduleLower}}Data = [
+            'name' => 'Test {{module}}',
+            'description' => 'This is a test {{moduleLower}}',
+            'is_active' => true,
+        ];
+
+        $response = $this->post(route('{{moduleLower}}s.store'), ${{moduleLower}}Data);
+
+        $response->assertRedirect(route('{{moduleLower}}s.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('{{moduleSnake}}', [
+            'name' => 'Test {{module}}',
+            'description' => 'This is a test {{moduleLower}}',
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Test {{moduleLower}} validation works correctly.
+     */
+    public function test_{{moduleLower}}_validation_works_correctly(): void
+    {
+        $response = $this->post(route('{{moduleLower}}s.store'), []);
+
+        $response->assertSessionHasErrors(['name']);
+    }
+
+    /**
+     * Test {{moduleLower}} can be updated successfully.
+     */
+    public function test_{{moduleLower}}_can_be_updated_successfully(): void
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        $updatedData = [
+            'name' => 'Updated {{module}}',
+            'description' => 'Updated description',
+            'is_active' => false,
+        ];
+
+        $response = $this->put(route('{{moduleLower}}s.update', ${{moduleLower}}), $updatedData);
+
+        $response->assertRedirect(route('{{moduleLower}}s.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('{{moduleSnake}}', [
+            'id' => ${{moduleLower}}->id,
+            'name' => 'Updated {{module}}',
+            'description' => 'Updated description',
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Test {{moduleLower}} can be deleted successfully.
+     */
+    public function test_{{moduleLower}}_can_be_deleted_successfully(): void
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        $response = $this->delete(route('{{moduleLower}}s.destroy', ${{moduleLower}}));
+
+        $response->assertRedirect(route('{{moduleLower}}s.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('{{moduleSnake}}', [
+            'id' => ${{moduleLower}}->id,
+        ]);
+    }
+}

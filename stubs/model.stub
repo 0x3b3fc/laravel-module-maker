@@ -1,0 +1,64 @@
+<?php
+
+namespace {{moduleNamespace}}\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class {{module}} extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Get the table name for the model.
+     */
+    public function getTable(): string
+    {
+        return '{{moduleSnake}}';
+    }
+
+    /**
+     * Get the primary key for the model.
+     */
+    public function getKeyName(): string
+    {
+        return 'id';
+    }
+
+    /**
+     * Scope a query to only include active records.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
+}
