@@ -18,7 +18,6 @@ A powerful Laravel package for generating modular HMVC (Hierarchical Model-View-
 - PHP 8.2 or higher
 - Laravel 12.0 or higher
 - Composer
-- Git (for version control)
 
 ## Installation
 
