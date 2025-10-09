@@ -1233,7 +1233,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Need Help?**
 
-[📧 Email](mailto:dev.sief.hesham@gmail.com) • [🐛 Issues](https://github.com/phpsamurai/laravel-module-maker/issues) • [📚 Wiki](https://github.com/phpsamurai/laravel-module-maker/wiki)
+[📧 Email](mailto:dev.sief.hesham@gmail.com) • [🐛 Issues](https://github.com/phpsamurai/laravel-module-maker/issues) • [📚 Wiki](https://github.com/0x3b3fc/laravel-module-maker/wiki)
 
 </div>
 
