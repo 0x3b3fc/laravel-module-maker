@@ -8,6 +8,18 @@ use Illuminate\Support\Str;
 class ModuleGenerator
 {
     /**
+     * Navigation manager instance.
+     */
+    protected NavigationManager $navigationManager;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->navigationManager = new NavigationManager();
+    }
+    /**
      * Generator options.
      *
      * @var array
@@ -29,6 +41,7 @@ class ModuleGenerator
     {
         return [
             'force' => false,
+            'type' => config('module-maker.default_type', 'api'),
             'generate_tests' => config('module-maker.generate_tests', true),
             'generate_seeders' => config('module-maker.generate_seeders', true),
             'generate_factories' => config('module-maker.generate_factories', true),
@@ -68,9 +81,19 @@ class ModuleGenerator
             $files = $this->generateFilesFromStubs($moduleName, $modulePath);
             $generatedFiles = array_merge($generatedFiles, $files);
 
+            // Create Livewire layout if needed
+            if (in_array($this->options['type'], ['livewire', 'full'])) {
+                $this->ensureLivewireLayout();
+            }
+
             // Register routes if auto_register_routes is enabled
             if (config('module-maker.auto_register_routes', true)) {
                 $this->registerRoutes($moduleName);
+            }
+
+            // Add navigation link for Livewire and Full modules
+            if (in_array($this->options['type'], ['livewire', 'full'])) {
+                $this->navigationManager->addNavigationLink($moduleName);
             }
 
             return [
@@ -100,22 +123,47 @@ class ModuleGenerator
     protected function getModuleDirectories(string $moduleName): array
     {
         $basePath = $this->getModulePath($moduleName);
+        $type = $this->options['type'];
 
-        return [
-            $basePath . '/Controllers',
+        if ($type === 'livewire') {
+            // Livewire only: just UI components
+            return [
+                $basePath . '/Livewire',
+                $basePath . '/Views/livewire',
+                $basePath . '/Routes',
+                $basePath . '/Providers',
+            ];
+        }
+
+        // For API and Full modules
+        $directories = [
             $basePath . '/Models',
-            $basePath . '/Views',
             $basePath . '/Routes',
             $basePath . '/Database/Migrations',
             $basePath . '/Database/Seeders',
             $basePath . '/Database/Factories',
             $basePath . '/Http/Middleware',
             $basePath . '/Http/Requests',
+            $basePath . '/Http/Resources',
             $basePath . '/Providers',
             $basePath . '/Tests/Feature',
             $basePath . '/Tests/Unit',
             $basePath . '/Config',
         ];
+
+        if ($type === 'full') {
+            // Full-stack: both API and Livewire
+            $directories[] = $basePath . '/Controllers';
+            $directories[] = $basePath . '/Livewire';
+            $directories[] = $basePath . '/Views';
+            $directories[] = $basePath . '/Views/livewire';
+        } else {
+            // API only
+            $directories[] = $basePath . '/Controllers';
+            $directories[] = $basePath . '/Views';
+        }
+
+        return $directories;
     }
 
     /**
@@ -124,15 +172,188 @@ class ModuleGenerator
     protected function generateFilesFromStubs(string $moduleName, string $modulePath): array
     {
         $generatedFiles = [];
-        $stubPath = $this->getStubPath();
+        $type = $this->options['type'];
 
-        // Generate Controller
+        if ($type === 'full') {
+            // Generate both API and Livewire files
+            $apiFiles = $this->generateApiFiles($moduleName, $modulePath);
+            $livewireFiles = $this->generateLivewireFiles($moduleName, $modulePath);
+            $generatedFiles = array_merge($apiFiles, $livewireFiles);
+
+            // Generate common files for full modules
+            $commonFiles = $this->generateCommonFiles($moduleName, $modulePath);
+            $generatedFiles = array_merge($generatedFiles, $commonFiles);
+        } elseif ($type === 'livewire') {
+            // Livewire only: just UI components and service provider
+            $generatedFiles = $this->generateLivewireFiles($moduleName, $modulePath);
+
+            // Only generate service provider for Livewire-only modules
+            $serviceProviderFile = $this->generateServiceProvider($moduleName, $modulePath, 'livewire');
+            if ($serviceProviderFile) $generatedFiles[] = $serviceProviderFile;
+        } else {
+            // API: generate backend with models, migrations, etc.
+            $generatedFiles = $this->generateApiFiles($moduleName, $modulePath);
+
+            // Generate common files for API modules
+            $commonFiles = $this->generateCommonFiles($moduleName, $modulePath);
+            $generatedFiles = array_merge($generatedFiles, $commonFiles);
+        }
+
+        return $generatedFiles;
+    }
+
+    /**
+     * Generate API-specific files.
+     */
+    protected function generateApiFiles(string $moduleName, string $modulePath): array
+    {
+        $generatedFiles = [];
+        $stubPath = $this->getStubPath();
+        $isFull = $this->options['type'] === 'full';
+
+        // Generate Controller (use API controller for full type, regular for API-only)
+        $controllerStub = $isFull ? 'controller-api.stub' : 'controller.stub';
+        $controllerName = $isFull ? $moduleName . 'ApiController.php' : $moduleName . 'Controller.php';
+
         $controllerFile = $this->generateFileFromStub(
-            $stubPath . '/controller.stub',
-            $modulePath . '/Controllers/' . $moduleName . 'Controller.php',
+            $stubPath . '/' . $controllerStub,
+            $modulePath . '/Controllers/' . $controllerName,
             $this->getReplacements($moduleName)
         );
         if ($controllerFile) $generatedFiles[] = $controllerFile;
+
+        // Generate API Resources (for full or API type)
+        $resourceFile = $this->generateFileFromStub(
+            $stubPath . '/resource.stub',
+            $modulePath . '/Http/Resources/' . $moduleName . 'Resource.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($resourceFile) $generatedFiles[] = $resourceFile;
+
+        $collectionFile = $this->generateFileFromStub(
+            $stubPath . '/resource-collection.stub',
+            $modulePath . '/Http/Resources/' . $moduleName . 'Collection.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($collectionFile) $generatedFiles[] = $collectionFile;
+
+        // Generate Routes
+        if (!$isFull) {
+            // For API-only, generate web routes
+            $webRoutesFile = $this->generateFileFromStub(
+                $stubPath . '/routes-web.stub',
+                $modulePath . '/Routes/web.php',
+                $this->getReplacements($moduleName)
+            );
+            if ($webRoutesFile) $generatedFiles[] = $webRoutesFile;
+        }
+
+        // Generate API routes (use full stub for full type)
+        $apiRoutesStub = $isFull ? 'routes-api-full.stub' : 'routes-api.stub';
+        $apiRoutesFile = $this->generateFileFromStub(
+            $stubPath . '/' . $apiRoutesStub,
+            $modulePath . '/Routes/api.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($apiRoutesFile) $generatedFiles[] = $apiRoutesFile;
+
+        // Generate Views (only if not full type, as full type will have Livewire views)
+        if (!$isFull) {
+            $indexViewFile = $this->generateFileFromStub(
+                $stubPath . '/view-index.stub',
+                $modulePath . '/Views/index.blade.php',
+                $this->getReplacements($moduleName)
+            );
+            if ($indexViewFile) $generatedFiles[] = $indexViewFile;
+
+            $createViewFile = $this->generateFileFromStub(
+                $stubPath . '/view-create.stub',
+                $modulePath . '/Views/create.blade.php',
+                $this->getReplacements($moduleName)
+            );
+            if ($createViewFile) $generatedFiles[] = $createViewFile;
+
+            $editViewFile = $this->generateFileFromStub(
+                $stubPath . '/view-edit.stub',
+                $modulePath . '/Views/edit.blade.php',
+                $this->getReplacements($moduleName)
+            );
+            if ($editViewFile) $generatedFiles[] = $editViewFile;
+        }
+
+        return $generatedFiles;
+    }
+
+    /**
+     * Generate Livewire-specific files.
+     */
+    protected function generateLivewireFiles(string $moduleName, string $modulePath): array
+    {
+        $generatedFiles = [];
+        $stubPath = $this->getStubPath();
+
+        // Generate Livewire Components
+        $indexComponent = $this->generateFileFromStub(
+            $stubPath . '/livewire-index.stub',
+            $modulePath . '/Livewire/Index.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($indexComponent) $generatedFiles[] = $indexComponent;
+
+        $createComponent = $this->generateFileFromStub(
+            $stubPath . '/livewire-create.stub',
+            $modulePath . '/Livewire/Create.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($createComponent) $generatedFiles[] = $createComponent;
+
+        $editComponent = $this->generateFileFromStub(
+            $stubPath . '/livewire-edit.stub',
+            $modulePath . '/Livewire/Edit.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($editComponent) $generatedFiles[] = $editComponent;
+
+        // Generate Livewire Views
+        $indexView = $this->generateFileFromStub(
+            $stubPath . '/livewire-view-index.stub',
+            $modulePath . '/Views/livewire/index.blade.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($indexView) $generatedFiles[] = $indexView;
+
+        $createView = $this->generateFileFromStub(
+            $stubPath . '/livewire-view-create.stub',
+            $modulePath . '/Views/livewire/create.blade.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($createView) $generatedFiles[] = $createView;
+
+        $editView = $this->generateFileFromStub(
+            $stubPath . '/livewire-view-edit.stub',
+            $modulePath . '/Views/livewire/edit.blade.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($editView) $generatedFiles[] = $editView;
+
+        // Generate Livewire Routes
+        $webRoutesFile = $this->generateFileFromStub(
+            $stubPath . '/routes-livewire.stub',
+            $modulePath . '/Routes/web.php',
+            $this->getReplacements($moduleName)
+        );
+        if ($webRoutesFile) $generatedFiles[] = $webRoutesFile;
+
+        return $generatedFiles;
+    }
+
+    /**
+     * Generate common files (Model, Migration, Service Provider, etc.).
+     */
+    protected function generateCommonFiles(string $moduleName, string $modulePath): array
+    {
+        $generatedFiles = [];
+        $stubPath = $this->getStubPath();
 
         // Generate Model
         $modelFile = $this->generateFileFromStub(
@@ -142,50 +363,22 @@ class ModuleGenerator
         );
         if ($modelFile) $generatedFiles[] = $modelFile;
 
-        // Generate Routes
-        $webRoutesFile = $this->generateFileFromStub(
-            $stubPath . '/routes-web.stub',
-            $modulePath . '/Routes/web.php',
-            $this->getReplacements($moduleName)
-        );
-        if ($webRoutesFile) $generatedFiles[] = $webRoutesFile;
-
-        $apiRoutesFile = $this->generateFileFromStub(
-            $stubPath . '/routes-api.stub',
-            $modulePath . '/Routes/api.php',
-            $this->getReplacements($moduleName)
-        );
-        if ($apiRoutesFile) $generatedFiles[] = $apiRoutesFile;
-
         // Generate Migration
         $migrationFile = $this->generateMigrationFile($moduleName, $modulePath);
         if ($migrationFile) $generatedFiles[] = $migrationFile;
 
-        // Generate Views
-        $indexViewFile = $this->generateFileFromStub(
-            $stubPath . '/view-index.stub',
-            $modulePath . '/Views/index.blade.php',
-            $this->getReplacements($moduleName)
-        );
-        if ($indexViewFile) $generatedFiles[] = $indexViewFile;
-
-        $createViewFile = $this->generateFileFromStub(
-            $stubPath . '/view-create.stub',
-            $modulePath . '/Views/create.blade.php',
-            $this->getReplacements($moduleName)
-        );
-        if ($createViewFile) $generatedFiles[] = $createViewFile;
-
-        $editViewFile = $this->generateFileFromStub(
-            $stubPath . '/view-edit.stub',
-            $modulePath . '/Views/edit.blade.php',
-            $this->getReplacements($moduleName)
-        );
-        if ($editViewFile) $generatedFiles[] = $editViewFile;
-
         // Generate Service Provider
+        $type = $this->options['type'];
+        if ($type === 'full') {
+            $serviceProviderStub = 'service-provider-full.stub';
+        } elseif ($type === 'livewire') {
+            $serviceProviderStub = 'service-provider-livewire.stub';
+        } else {
+            $serviceProviderStub = 'service-provider-api.stub';
+        }
+
         $serviceProviderFile = $this->generateFileFromStub(
-            $stubPath . '/service-provider.stub',
+            $stubPath . '/' . $serviceProviderStub,
             $modulePath . '/Providers/' . $moduleName . 'ServiceProvider.php',
             $this->getReplacements($moduleName)
         );
@@ -193,8 +386,9 @@ class ModuleGenerator
 
         // Generate Tests
         if ($this->options['generate_tests']) {
+            $testStub = $this->options['type'] === 'livewire' ? 'test-livewire.stub' : 'test-feature.stub';
             $featureTestFile = $this->generateFileFromStub(
-                $stubPath . '/test-feature.stub',
+                $stubPath . '/' . $testStub,
                 $modulePath . '/Tests/Feature/' . $moduleName . 'Test.php',
                 $this->getReplacements($moduleName)
             );
@@ -232,24 +426,60 @@ class ModuleGenerator
     }
 
     /**
+     * Generate service provider only.
+     */
+    protected function generateServiceProvider(string $moduleName, string $modulePath, string $type): ?string
+    {
+        $stubPath = $this->getStubPath();
+
+        if ($type === 'full') {
+            $serviceProviderStub = 'service-provider-full.stub';
+        } elseif ($type === 'livewire') {
+            $serviceProviderStub = 'service-provider-livewire.stub';
+        } else {
+            $serviceProviderStub = 'service-provider-api.stub';
+        }
+
+        return $this->generateFileFromStub(
+            $stubPath . '/' . $serviceProviderStub,
+            $modulePath . '/Providers/' . $moduleName . 'ServiceProvider.php',
+            $this->getReplacements($moduleName)
+        );
+    }
+
+    /**
      * Generate file from stub.
      */
     protected function generateFileFromStub(string $stubPath, string $targetPath, array $replacements): ?string
     {
         if (!File::exists($stubPath)) {
+            \Log::warning("Stub file not found: {$stubPath}");
             return null;
         }
 
         if (!$this->options['force'] && File::exists($targetPath)) {
+            \Log::info("Target file already exists (skipping): {$targetPath}");
             return null;
         }
 
-        $content = File::get($stubPath);
-        $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+        try {
+            $content = File::get($stubPath);
+            $content = str_replace(array_keys($replacements), array_values($replacements), $content);
 
-        File::put($targetPath, $content);
+            // Ensure directory exists
+            $directory = dirname($targetPath);
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0755, true);
+            }
 
-        return $targetPath;
+            File::put($targetPath, $content);
+            \Log::info("Generated file: {$targetPath}");
+
+            return $targetPath;
+        } catch (\Exception $e) {
+            \Log::error("Failed to generate file {$targetPath}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -384,5 +614,31 @@ class ModuleGenerator
         $relativePath = str_replace(base_path() . '/', '', $to);
 
         return '../' . $relativePath . '/web.php';
+    }
+
+    /**
+     * Ensure Livewire layout exists.
+     */
+    protected function ensureLivewireLayout(): void
+    {
+        $layoutPath = resource_path('views/components/layouts/app.blade.php');
+
+        // If layout already exists, don't overwrite it
+        if (File::exists($layoutPath)) {
+            return;
+        }
+
+        // Create the directory if it doesn't exist
+        $layoutDir = dirname($layoutPath);
+        if (!File::exists($layoutDir)) {
+            File::makeDirectory($layoutDir, 0755, true);
+        }
+
+        // Copy layout from stub
+        $stubPath = $this->getStubPath() . '/layout-app.stub';
+        if (File::exists($stubPath)) {
+            File::copy($stubPath, $layoutPath);
+            \Log::info("Created Livewire layout: {$layoutPath}");
+        }
     }
 }

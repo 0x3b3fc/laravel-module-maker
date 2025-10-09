@@ -1,352 +1,1321 @@
-# Laravel Module Maker
+<div align="center">
 
-A powerful Laravel package for generating modular HMVC (Hierarchical Model-View-Controller) structures with artisan commands. This package helps you organize your Laravel applications into self-contained modules, improving maintainability and scalability.
+# 🏗️ Laravel Module Maker
 
-## Features
+### Transform Your Laravel App into a Modular Masterpiece
 
-- 🚀 **Easy Module Generation**: Generate complete HMVC modules with a single artisan command
-- 🏗️ **Complete Structure**: Creates controllers, models, views, routes, migrations, tests, seeders, and factories
-- 🔄 **Dynamic Templates**: Uses customizable stub templates with dynamic name replacements
-- 📝 **Auto Route Registration**: Automatically registers module routes in your main route files
-- 🧪 **Test Generation**: Generates feature and unit tests for your modules
-- 🎨 **Customizable Stubs**: Publish and customize stub templates to match your project needs
-- ⚡ **Conflict Handling**: Prevents overwriting existing modules unless forced
-- 🔧 **Laravel 12+ Compatible**: Built for the latest Laravel framework
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Laravel](https://img.shields.io/badge/Laravel-12%2B-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
+[![Livewire](https://img.shields.io/badge/Livewire-3.x-FB70A9?style=flat-square&logo=livewire&logoColor=white)](https://livewire.laravel.com)
 
-## Requirements
+**Build scalable, maintainable Laravel applications with self-contained HMVC modules.**
 
-- PHP 8.2 or higher
-- Laravel 12.0 or higher
-- Composer
+**One command. Complete module. Zero configuration.**
 
-## Installation
+[Quick Start](#-quick-start) • [Features](#-features) • [Commands](#-all-commands) • [Examples](#-real-world-examples) • [Support](#-support)
 
-### Via Composer
+---
+
+</div>
+
+## 🎯 What Is This?
+
+Laravel Module Maker is a powerful package that generates **complete, production-ready modules** for your Laravel applications using the HMVC (Hierarchical Model-View-Controller) pattern.
+
+### The Problem
+
+```bash
+Traditional Laravel App          Your App After Module Maker
+─────────────────────           ──────────────────────────────
+app/                            modules/
+├── Controllers/                ├── Product/
+│   ├── UserController              ├── Controllers/
+│   ├── ProductController           ├── Models/
+│   ├── OrderController             ├── Views/
+│   └── ... (100+ files)            ├── Routes/
+├── Models/                         ├── Tests/
+│   └── ... (50+ files)             └── ... (self-contained)
+└── ... (messy!)                ├── Order/
+                                │   └── ... (self-contained)
+❌ Hard to maintain             └── User/
+❌ Tight coupling                   └── ... (self-contained)
+❌ Difficult to scale           
+                                ✅ Easy to maintain
+                                ✅ Loose coupling
+                                ✅ Scales effortlessly
+```
+
+### The Solution
+
+```bash
+php artisan make:module Product --type=full
+```
+
+**You get:** A complete, self-contained module with API, UI, database, tests, and more. **In 2 seconds.**
+
+---
+
+## ✨ Features
+
+<div align="center">
+
+| 🚀 Module Types | 🔧 Automation | 📦 Management | 🎨 UI/UX |
+|:---:|:---:|:---:|:---:|
+| Full-Stack | Auto-register providers | List modules | Tailwind CSS |
+| API-only | Auto-update composer | Delete safely | Alpine.js |
+| Livewire-only | Auto-add navigation | Health checks | Responsive |
+| With relationships | Auto-register routes | Dashboard | Real-time validation |
+
+</div>
+
+### 🪄 Magical Features
+
+- **🧭 Auto Navigation**: Adds links to your layout automatically
+- **🏥 Health Monitoring**: 10-point health check system
+- **📊 Dashboard**: Beautiful overview of all modules
+- **🔗 Relationships**: Scaffold BelongsTo and HasMany relationships
+- **⚡ Zero Config**: Everything works out of the box
+- **🛡️ Safe Deletion**: Double confirmation + automatic cleanup
+
+---
+
+## 📋 Requirements
+
+```bash
+PHP      >= 8.2
+Laravel  >= 12.0
+Composer >= 2.0
+Livewire >= 3.0  (optional, for Livewire modules)
+```
+
+---
+
+## 🚀 Installation
 
 ```bash
 composer require phpsamurai/laravel-module-maker
 ```
 
-## Configuration
+**Optional:** For Livewire modules:
 
-After installation, publish the configuration file:
+```bash
+composer require livewire/livewire
+```
+
+**That's it!** Ready to use. No configuration needed.
+
+---
+
+## ⚡ Quick Start
+
+### Create Your First Module
+
+```bash
+php artisan make:module Blog --type=full
+```
+
+### Run Migrations
+
+```bash
+php artisan migrate
+```
+
+### Access Your Module
+
+- 🌐 **Web UI**: `http://your-app.test/blogs`
+- 🔌 **API**: `http://your-app.test/api/blogs`
+
+### See the Magic
+
+```bash
+php artisan module:dashboard
+```
+
+**Done!** Your module is ready with UI, API, database, tests, and navigation. 🎉
+
+---
+
+## 🎯 Module Types
+
+<table>
+<tr>
+<th width="25%">Type</th>
+<th width="25%">Command</th>
+<th width="25%">What You Get</th>
+<th width="25%">Use Case</th>
+</tr>
+
+<tr>
+<td align="center">
+<strong>🌟 Full-Stack</strong><br/>
+<em>Recommended</em>
+</td>
+<td>
+
+```bash
+--type=full
+```
+
+</td>
+<td>
+
+• API Controller<br/>
+• Livewire Components<br/>
+• Models & DB<br/>
+• Both Web & API<br/>
+• 18 files
+
+</td>
+<td>
+
+Complete features needing both UI and API
+
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<strong>🔌 API</strong>
+</td>
+<td>
+
+```bash
+--type=api
+```
+
+</td>
+<td>
+
+• API Controller<br/>
+• Models & DB<br/>
+• Bootstrap Views<br/>
+• API Resources<br/>
+• 15 files
+
+</td>
+<td>
+
+Backend services, REST APIs, microservices
+
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<strong>⚡ Livewire</strong>
+</td>
+<td>
+
+```bash
+--type=livewire
+```
+
+</td>
+<td>
+
+• Livewire Components<br/>
+• Tailwind Views<br/>
+• Web Routes<br/>
+• No Backend<br/>
+• 8 files
+
+</td>
+<td>
+
+UI for existing APIs, frontend features
+
+</td>
+</tr>
+
+</table>
+
+---
+
+## 📚 All Commands
+
+### 🎨 Module Creation
+
+```bash
+# Interactive mode (prompts for type)
+php artisan make:module Product
+
+# Full-Stack module (API + Livewire)
+php artisan make:module Product --type=full
+
+# API module (backend only)
+php artisan make:module Product --type=api
+
+# Livewire module (UI only)
+php artisan make:module Product --type=livewire
+
+# With relationships
+php artisan make:module-with-relations OrderItem \
+  --type=full \
+  --belongs-to=Order \
+  --belongs-to=Product \
+  --has-many=Review
+
+# With options
+php artisan make:module Product --force --no-tests --no-seeders
+```
+
+### 📊 Module Management
+
+```bash
+# Interactive dashboard
+php artisan module:dashboard
+
+# List all modules
+php artisan list:modules
+
+# Check module health
+php artisan module:health Product
+
+# Check all modules health
+php artisan module:health
+
+# Delete module (with confirmation)
+php artisan delete:module Product
+
+# Force delete (no confirmation)
+php artisan delete:module Product --force
+```
+
+### ⚙️ Customization
+
+```bash
+# Publish configuration
+php artisan vendor:publish --tag=module-maker-config
+
+# Publish stub templates
+php artisan vendor:publish --tag=module-maker-stubs
+```
+
+---
+
+## 🏗️ What Gets Generated
+
+### Full-Stack Module Structure
+
+```
+modules/Product/
+│
+├── 📁 Controllers/
+│   └── ProductApiController.php       # RESTful API with search, filter, pagination
+│
+├── 📁 Livewire/
+│   ├── Index.php                      # List with real-time search & delete
+│   ├── Create.php                     # Create form with validation
+│   └── Edit.php                       # Edit form with validation
+│
+├── 📁 Models/
+│   └── Product.php                    # Eloquent model with scopes
+│
+├── 📁 Views/
+│   └── livewire/
+│       ├── index.blade.php            # Tailwind styled list view
+│       ├── create.blade.php           # Tailwind styled form
+│       └── edit.blade.php             # Tailwind styled form
+│
+├── 📁 Routes/
+│   ├── web.php                        # Livewire routes (/products)
+│   └── api.php                        # API routes (/api/products)
+│
+├── 📁 Http/
+│   ├── Resources/
+│   │   ├── ProductResource.php        # JSON resource transformer
+│   │   └── ProductCollection.php      # JSON collection wrapper
+│   ├── Middleware/                    # Ready for custom middleware
+│   └── Requests/                      # Ready for form requests
+│
+├── 📁 Database/
+│   ├── Migrations/
+│   │   └── 2025_xx_xx_create_product_table.php
+│   ├── Seeders/
+│   │   └── ProductSeeder.php          # Sample data seeder
+│   └── Factories/
+│       └── ProductFactory.php         # Factory for testing
+│
+├── 📁 Tests/
+│   ├── Feature/
+│   │   └── ProductTest.php            # HTTP endpoint tests
+│   └── Unit/
+│       └── ProductTest.php            # Model unit tests
+│
+├── 📁 Providers/
+│   └── ProductServiceProvider.php     # Auto-registered provider
+│
+└── 📁 Config/                         # Module-specific config
+```
+
+**Total: 18 files, ~35 KB, Production-ready**
+
+---
+
+## 🔥 Automatic Features
+
+### What Happens Automatically
+
+When you run `php artisan make:module Product --type=full`:
+
+<table>
+<tr>
+<td width="50%">
+
+**✅ File Generation**
+
+- 18 files created
+- All properly namespaced
+- PSR-4 compliant
+- Modern PHP 8.2+ syntax
+
+**✅ Registration**
+
+- Service provider registered
+- Routes registered (web & API)
+- Livewire components registered
+- View namespaces registered
+
+</td>
+<td width="50%">
+
+**✅ Configuration**
+
+- Composer autoload updated
+- `composer dump-autoload` runs
+- All caches cleared
+- Migrations loaded
+
+**✅ UI Enhancement**
+
+- Navigation link added
+- Layout created (if needed)
+- Views registered
+- Components ready
+
+</td>
+</tr>
+</table>
+
+### What You Need to Do
+
+```bash
+php artisan migrate
+```
+
+**That's it!** Everything else is automatic. 🎉
+
+---
+
+## 💻 Code Examples
+
+### Generated API Controller
+
+```php
+namespace Modules\Product\Controllers;
+
+class ProductApiController
+{
+    public function index(Request $request): JsonResponse
+    {
+        $query = Product::query();
+        
+        // 🔍 Built-in search
+        if ($request->has('search')) {
+            $query->where('name', 'like', "%{$request->search}%");
+        }
+        
+        // 🎯 Built-in filtering
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->is_active);
+        }
+        
+        // 📄 Built-in pagination
+        $products = $query->paginate(15);
+        
+        return response()->json(new ProductCollection($products));
+    }
+    
+    // ✅ store(), show(), update(), destroy() included
+}
+```
+
+### Generated Livewire Component
+
+```php
+namespace Modules\Product\Livewire;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+
+class Index extends Component
+{
+    use WithPagination;
+    
+    public $search = '';
+    public $confirmingDeletion = false;
+    
+    // 🔍 Real-time search
+    protected $queryString = ['search'];
+    
+    // 🗑️ Delete with confirmation
+    public function delete($id)
+    {
+        $this->confirmingDeletion = true;
+        $this->deletingId = $id;
+    }
+    
+    public function render()
+    {
+        $products = Product::query()
+            ->when($this->search, fn($q) => 
+                $q->where('name', 'like', "%{$this->search}%")
+            )
+            ->latest()
+            ->paginate(15);
+            
+        return view('products::livewire.index', [
+            'products' => $products
+        ]);
+    }
+}
+```
+
+### Generated Routes
+
+```php
+// Web Routes (Livewire UI)
+Route::get('/products', Index::class)->name('products.index');
+Route::get('/products/create', Create::class)->name('products.create');
+Route::get('/products/{product}/edit', Edit::class)->name('products.edit');
+
+// API Routes (JSON)
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductApiController::class, 'index']);
+    Route::post('/', [ProductApiController::class, 'store']);
+    Route::get('/{product}', [ProductApiController::class, 'show']);
+    Route::put('/{product}', [ProductApiController::class, 'update']);
+    Route::delete('/{product}', [ProductApiController::class, 'destroy']);
+});
+```
+
+---
+
+## 🌟 Advanced Features
+
+### 1. 🧭 Automatic Navigation
+
+**Navigation links are added automatically!**
+
+```bash
+php artisan make:module Product --type=full
+```
+
+**Before:**
+
+```html
+<nav>
+  <a href="/">Home</a>
+  <a href="/orders">Orders</a>
+</nav>
+```
+
+**After:**
+
+```html
+<nav>
+  <a href="/">Home</a>
+  <a href="/orders">Orders</a>
+  <a href="/products">Products</a>  ← Added automatically!
+</nav>
+```
+
+**Features:**
+
+- ✅ Auto-adds for Livewire/Full-Stack modules
+- ✅ Auto-removes when module deleted
+- ✅ No duplicates
+- ✅ Maintains formatting
+
+---
+
+### 2. 📊 Interactive Dashboard
+
+**See everything at a glance!**
+
+```bash
+php artisan module:dashboard
+```
+
+**Output:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║           🏗️  LARAVEL MODULE MAKER DASHBOARD 🏗️             ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 MODULE STATISTICS
+
+  Total Modules:        5
+  Full-Stack Modules:   3
+  API Modules:          2
+  Livewire Modules:     0
+  Total Routes:         45
+  Total Files:          85
+  Total Size:           250.5 KB
+
+📦 YOUR MODULES
+
+┌──────────┬────────────┬────────┬─────────┐
+│ Module   │ Type       │ Routes │ Health  │
+├──────────┼────────────┼────────┼─────────┤
+│ Category │ Full-Stack │ 9      │ ✅ 100% │
+│ Order    │ Full-Stack │ 9      │ ✅ 100% │
+│ Product  │ Full-Stack │ 9      │ ✅ 100% │
+│ Tag      │ API        │5       │ ✅ 100% │
+│ UserUI   │ Livewire   │ 3      │ ✅ 100% │
+└──────────┴────────────┴────────┴─────────┘
+
+⚡ QUICK ACTIONS
+  • Create:  php artisan make:module {name} --type=full
+  • Health:  php artisan module:health {name}
+  • Delete:  php artisan delete:module {name}
+```
+
+---
+
+### 3. 🏥 Health Check System
+
+**Monitor your modules' health!**
+
+```bash
+# Check single module
+php artisan module:health Product
+
+# Check all modules
+php artisan module:health
+```
+
+**10-Point Health Check:**
+
+1. ✅ Has controllers/components
+2. ✅ Has models
+3. ✅ Has routes
+4. ✅ Has views
+5. ✅ Has migrations
+6. ✅ Has tests
+7. ✅ Has service provider
+8. ✅ Provider registered
+9. ✅ Routes registered
+10. ✅ Namespace configured
+
+**Health Scores:**
+
+- 🟢 **90-100%**: Excellent
+- 🟡 **70-89%**: Needs attention
+- 🔴 **Below 70%**: Critical
+
+---
+
+### 4. 🔗 Relationship Scaffolding
+
+**Generate modules with relationships built-in!**
+
+```bash
+php artisan make:module-with-relations OrderItem \
+  --type=full \
+  --belongs-to=Order \
+  --belongs-to=Product \
+  --has-many=Review
+```
+
+**Automatically generates:**
+
+**In Model:**
+
+```php
+public function order()
+{
+    return $this->belongsTo(\Modules\Order\Models\Order::class);
+}
+
+public function product()
+{
+    return $this->belongsTo(\Modules\Product\Models\Product::class);
+}
+
+public function reviews()
+{
+    return $this->hasMany(\Modules\Review\Models\Review::class);
+}
+```
+
+**In Migration:**
+
+```php
+$table->foreignId('order_id')->constrained()->onDelete('cascade');
+$table->foreignId('product_id')->constrained()->onDelete('cascade');
+```
+
+---
+
+## 🌈 Real-World Examples
+
+### Example 1: E-commerce Platform
+
+```bash
+# Step 1: Create product catalog
+php artisan make:module Product --type=full
+php artisan migrate
+
+# Step 2: Create orders with relationships
+php artisan make:module-with-relations Order \
+  --type=full \
+  --has-many=OrderItem
+
+# Step 3: Create order items with relationships
+php artisan make:module-with-relations OrderItem \
+  --type=full \
+  --belongs-to=Order \
+  --belongs-to=Product
+
+# Step 4: View dashboard
+php artisan module:dashboard
+
+# Done! You have:
+# ✅ Product catalog with UI and API
+# ✅ Order management with relationships
+# ✅ Order items linked to orders and products
+# ✅ All navigation links added automatically
+```
+
+### Example 2: Blog Platform
+
+```bash
+# Backend API
+php artisan make:module Post --type=api
+php artisan make:module Comment --type=api
+
+# Frontend UIs
+php artisan make:module BlogPublic --type=livewire
+php artisan make:module BlogAdmin --type=livewire
+
+# Result: Separate backend and multiple frontends!
+```
+
+### Example 3: SaaS Application
+
+```bash
+# Core modules
+php artisan make:module User --type=full
+php artisan make:module Subscription --type=full
+php artisan make:module Payment --type=full
+
+# Feature modules
+php artisan make:module Analytics --type=api
+php artisan make:module Reporting --type=api
+
+# UI modules
+php artisan make:module Dashboard --type=livewire
+php artisan make:module Settings --type=livewire
+
+# Check everything
+php artisan module:dashboard
+```
+
+---
+
+## 🔌 API Endpoints
+
+### Generated Endpoints
+
+| Method | Endpoint | Features |
+|--------|----------|----------|
+| `GET` | `/api/products` | List, search, filter, paginate, sort |
+| `POST` | `/api/products` | Create with validation |
+| `GET` | `/api/products/{id}` | Show single resource |
+| `PUT` | `/api/products/{id}` | Update with validation |
+| `DELETE` | `/api/products/{id}` | Delete resource |
+
+### Example API Usage
+
+```bash
+# List products
+curl http://your-app.test/api/products
+
+# Search
+curl "http://your-app.test/api/products?search=laptop"
+
+# Filter
+curl "http://your-app.test/api/products?is_active=1"
+
+# Paginate
+curl "http://your-app.test/api/products?page=2"
+
+# Create
+curl -X POST http://your-app.test/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Laptop","description":"Gaming laptop"}'
+
+# Update
+curl -X PUT http://your-app.test/api/products/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Laptop"}'
+
+# Delete
+curl -X DELETE http://your-app.test/api/products/1
+```
+
+**Response Format:**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Product Name",
+      "description": "Description",
+      "is_active": true,
+      "created_at": "2025-10-09T12:00:00.000000Z"
+    }
+  ],
+  "meta": {
+    "total": 100,
+    "per_page": 15,
+    "current_page": 1
+  }
+}
+```
+
+---
+
+## 🎨 Livewire Components
+
+### Interactive UI Components
+
+**Index Component:**
+
+- 🔍 Real-time search
+- 📄 Pagination
+- 🗑️ Delete with confirmation modal
+- ✅ Success/error messages
+- 📱 Responsive design
+
+**Create Component:**
+
+- 📝 Form with validation
+- ⚡ Real-time validation
+- 🎯 Wire:model binding
+- ✅ Success redirect
+
+**Edit Component:**
+
+- 📝 Pre-filled form
+- ⚡ Real-time validation
+- 💾 Update functionality
+- ✅ Success redirect
+
+### Example Livewire View
+
+```blade
+<div class="max-w-7xl mx-auto px-4">
+    <!-- Search -->
+    <input wire:model.live="search" 
+           placeholder="Search products..." 
+           class="w-full px-4 py-2 border rounded-lg">
+    
+    <!-- Results -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        @foreach($products as $product)
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3>{{ $product->name }}</h3>
+                <p>{{ $product->description }}</p>
+                
+                <button wire:click="delete({{ $product->id }})"
+                        class="text-red-600 hover:text-red-800">
+                    Delete
+                </button>
+            </div>
+        @endforeach
+    </div>
+    
+    <!-- Pagination -->
+    {{ $products->links() }}
+</div>
+```
+
+---
+
+## 🧪 Testing
+
+### Generated Tests
+
+**Feature Test:**
+
+```php
+public function test_product_can_be_created(): void
+{
+    $response = $this->post(route('api.products.store'), [
+        'name' => 'Test Product',
+        'description' => 'Test description',
+    ]);
+
+    $response->assertStatus(201);
+    $this->assertDatabaseHas('products', [
+        'name' => 'Test Product'
+    ]);
+}
+```
+
+**Unit Test:**
+
+```php
+public function test_product_active_scope(): void
+{
+    Product::factory()->create(['is_active' => true]);
+    Product::factory()->create(['is_active' => false]);
+    
+    $this->assertCount(1, Product::active()->get());
+}
+```
+
+**Livewire Test:**
+
+```php
+public function test_can_create_product_via_livewire(): void
+{
+    Livewire::test(Create::class)
+        ->set('name', 'New Product')
+        ->call('save')
+        ->assertRedirect(route('products.index'));
+}
+```
+
+### Run Tests
+
+```bash
+# All tests
+php artisan test
+
+# Specific module
+php artisan test modules/Product/Tests/
+
+# With coverage
+php artisan test --coverage
+```
+
+---
+
+## ⚙️ Configuration
+
+### Publish Config
 
 ```bash
 php artisan vendor:publish --tag=module-maker-config
 ```
 
-This will create a `config/module-maker.php` file where you can customize:
-
-- **Module Path**: Where modules are generated (default: `modules`)
-- **Namespace**: Module namespace prefix (default: `Modules`)
-- **Auto Register Routes**: Whether to automatically register routes (default: `true`)
-- **Route Registration**: Which routes to register (`web`, `api`, or `both`)
-- **Generate Tests**: Whether to generate test files (default: `true`)
-- **Generate Seeders**: Whether to generate seeder files (default: `true`)
-- **Generate Factories**: Whether to generate factory files (default: `true`)
-
-## Usage
-
-### Basic Usage
-
-Generate a new module:
-
-```bash
-php artisan make:module Post
-```
-
-This will create a complete module structure:
-
-```bash
-modules/
-└── Post/
-    ├── Controllers/
-    │   └── PostController.php
-    ├── Models/
-    │   └── Post.php
-    ├── Views/
-    │   ├── index.blade.php
-    │   ├── create.blade.php
-    │   └── edit.blade.php
-    ├── Routes/
-    │   ├── web.php
-    │   └── api.php
-    ├── Database/
-    │   ├── Migrations/
-    │   │   └── 2025_10_07_165451_create_post_table.php
-    │   ├── Seeders/
-    │   │   └── PostSeeder.php
-    │   └── Factories/
-    │       └── PostFactory.php
-    ├── Tests/
-    │   ├── Feature/
-    │   │   └── PostTest.php
-    │   └── Unit/
-    │       └── PostTest.php
-    ├── Providers/
-    │   └── PostServiceProvider.php
-    └── Http/
-        ├── Middleware/
-        └── Requests/
-```
-
-### Command Options
-
-```bash
-# Force overwrite existing module
-php artisan make:module Post --force
-
-# Skip generating test files
-php artisan make:module Post --no-tests
-
-# Skip generating seeder files
-php artisan make:module Post --no-seeders
-
-# Skip generating factory files
-php artisan make:module Post --no-factories
-
-# Combine options
-php artisan make:module Post --no-tests --no-seeders
-```
-
-### Setup After Generation
-
-1. **Register Service Provider**: Add the generated service provider to `bootstrap/providers.php`:
+### Available Options
 
 ```php
 return [
-    App\Providers\AppServiceProvider::class,
+    // Module directory
+    'path' => 'modules',
     
-    // Module Service Providers
-    Modules\Post\Providers\PostServiceProvider::class,
+    // Namespace prefix
+    'namespace' => 'Modules',
+    
+    // Default module type
+    'default_type' => 'api',
+    
+    // Auto-register routes
+    'auto_register_routes' => true,
+    
+    // Route types to register
+    'route_registration' => 'both', // 'web', 'api', or 'both'
+    
+    // Generation options
+    'generate_tests' => true,
+    'generate_seeders' => true,
+    'generate_factories' => true,
 ];
 ```
 
-2. **Update Autoload**: Add modules namespace to your `composer.json`:
-
-```json
-{
-    "autoload": {
-        "psr-4": {
-            "Modules\\": "modules/"
-        }
-    }
-}
-```
-
-3. **Regenerate Autoload**:
-
-```bash
-composer dump-autoload
-```
-
-4. **Run Migrations**:
-
-```bash
-php artisan migrate
-```
-
-## Customizing Stubs
-
-Publish the stub templates to customize them:
+### Customize Stubs
 
 ```bash
 php artisan vendor:publish --tag=module-maker-stubs
 ```
 
-This will copy all stub templates to `resources/stubs/module-maker/`. You can then modify these templates to match your project's coding standards and preferences.
+Stubs copied to `resources/stubs/module-maker/`
 
-### Available Stub Variables
+**Available variables:**
 
-The following variables are available in all stub templates:
+| Variable | Output | Use |
+|----------|--------|-----|
+| `{{module}}` | `Product` | Class names |
+| `{{moduleLower}}` | `product` | Variables |
+| `{{moduleSnake}}` | `product` | Tables |
+| `{{modulePlural}}` | `Products` | Labels |
+| `{{namespace}}` | `Modules` | Namespaces |
+| `{{moduleNamespace}}` | `Modules\Product` | Full namespace |
 
-- `{{module}}` - Module name (e.g., "Post")
-- `{{moduleLower}}` - Module name in lowercase (e.g., "post")
-- `{{moduleSnake}}` - Module name in snake_case (e.g., "post")
-- `{{modulePlural}}` - Module name pluralized (e.g., "Posts")
-- `{{modulePluralLower}}` - Pluralized module name in lowercase (e.g., "posts")
-- `{{namespace}}` - Namespace prefix (e.g., "Modules")
-- `{{moduleNamespace}}` - Full module namespace (e.g., "Modules\Post")
+---
 
-## Module Structure
+## 🚨 Troubleshooting
 
-Each generated module follows the HMVC pattern with:
-
-### Controllers
-
-- Full CRUD operations
-- Proper validation
-- Resource routing
-- Type hints and return types
-
-### Models
-
-- Mass assignable attributes
-- Proper table configuration
-- Useful scopes (e.g., `active()`)
-- Eloquent relationships ready
-
-### Views
-
-- Bootstrap-compatible templates
-- Form validation display
-- Success/error messages
-- Responsive design
-
-### Routes
-
-- RESTful resource routes
-- Proper middleware groups
-- Named routes for easy reference
-
-### Database
-
-- Migration with common fields
-- Factory for testing
-- Seeder with sample data
-
-### Tests
-
-- Feature tests for HTTP endpoints
-- Unit tests for models
-- Database testing with RefreshDatabase
-
-## Advanced Usage
-
-### Custom Module Configuration
-
-You can customize module generation by modifying the configuration file:
-
-```php
-// config/module-maker.php
-return [
-    'path' => 'app/Modules',
-    'namespace' => 'App\\Modules',
-    'auto_register_routes' => false,
-    'route_registration' => 'web',
-    'generate_tests' => false,
-];
-```
-
-### Manual Route Registration
-
-If you disable auto route registration, you can manually register routes in your service provider:
-
-```php
-// In your module's ServiceProvider
-public function boot(): void
-{
-    $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
-    $this->loadViewsFrom(__DIR__ . '/../Views', 'posts');
-    $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-}
-```
-
-### Custom Directory Structure
-
-You can extend the `ModuleGenerator` service to create custom directory structures or add additional files.
-
-## Best Practices
-
-1. **Naming Convention**: Use PascalCase for module names (e.g., `Post`, `UserManagement`)
-2. **Service Providers**: Always register module service providers in `bootstrap/providers.php`
-3. **Namespace**: Keep the default `Modules` namespace for consistency
-4. **Routes**: Use the generated routes as a starting point and customize as needed
-5. **Views**: Customize the generated views to match your application's design
-6. **Tests**: Write additional tests beyond the generated ones for complex functionality
-
-## Troubleshooting
-
-### Module Classes Not Found
-
-If you get "Class not found" errors:
-
-1. Ensure the modules namespace is added to `composer.json`
-2. Run `composer dump-autoload`
-3. Check that the service provider is registered
-
-### Routes Not Working
-
-If routes aren't accessible:
-
-1. Verify the service provider is registered
-2. Check that routes are properly included in main route files
-3. Ensure the controller namespace is correct
-
-### Migration Not Found
-
-If migrations aren't detected:
-
-1. Verify the service provider is registered
-2. Check that `loadMigrationsFrom()` is called in the service provider
-3. Ensure migration files are in the correct directory
-
-## Examples
-
-### Creating a Blog Module
+<details>
+<summary><strong>❓ Class Not Found</strong></summary>
 
 ```bash
-# Generate the module
-php artisan make:module Blog
-
-# Update autoload
 composer dump-autoload
-
-# Add service provider to bootstrap/providers.php
-Modules\Blog\Providers\BlogServiceProvider::class
-
-# Run migrations
-php artisan migrate
-
-# Check routes
-php artisan route:list --name=blogs
+php artisan optimize:clear
 ```
 
-### Creating an E-commerce Module
+Verify `bootstrap/providers.php` contains your service provider.
+</details>
+
+<details>
+<summary><strong>❓ Routes Not Working</strong></summary>
 
 ```bash
-# Generate with custom options
-php artisan make:module Product --no-tests
-
-# The module will be created without test files
-# You can add tests later if needed
+php artisan route:clear
+php artisan route:list --name=products
 ```
 
-## Configuration Options
+Check service provider is registered.
+</details>
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `path` | string | `modules` | Directory where modules are generated |
-| `namespace` | string | `Modules` | Namespace prefix for modules |
-| `auto_register_routes` | boolean | `true` | Automatically register module routes |
-| `route_registration` | string | `both` | Which routes to register (`web`, `api`, `both`) |
-| `generate_tests` | boolean | `true` | Generate test files |
-| `generate_seeders` | boolean | `true` | Generate seeder files |
-| `generate_factories` | boolean | `true` | Generate factory files |
+<details>
+<summary><strong>❓ Livewire Component Not Found</strong></summary>
 
-## Contributing
+```bash
+composer require livewire/livewire
+php artisan optimize:clear
+```
+
+Ensure `@livewireStyles` and `@livewireScripts` in layout.
+</details>
+
+<details>
+<summary><strong>❓ Views Not Found</strong></summary>
+
+```bash
+php artisan view:clear
+```
+
+Use namespace notation: `products::livewire.index`
+</details>
+
+<details>
+<summary><strong>❓ Navigation Link Not Added</strong></summary>
+
+Check `resources/views/components/layouts/app.blade.php` exists.
+The package creates it automatically for first Livewire module.
+</details>
+
+---
+
+## 📖 Best Practices
+
+### ✅ DO
+
+- **Use PascalCase** for module names: `ProductCatalog`, `UserManagement`
+- **Plan relationships** before creating modules
+- **Run health checks** before deployment
+- **Use dashboard** to monitor modules
+- **Test modules** after generation
+- **Backup** before deleting modules
+- **Use Full-Stack** for complete features
+
+### ❌ DON'T
+
+- **Use snake_case** for module names
+- **Skip migrations** after creating modules
+- **Delete without confirmation** in production
+- **Ignore health warnings**
+- **Create without planning structure**
+- **Use --force** without backups
+
+---
+
+## 🎯 Use Cases
+
+<table>
+<tr>
+<td width="33%">
+
+### 🏢 Enterprise
+
+- User Management
+- Role & Permissions
+- Audit Logging
+- Reporting
+- Admin Dashboards
+- Multi-tenancy
+
+</td>
+<td width="33%">
+
+### 🛒 E-commerce
+
+- Product Catalog
+- Shopping Cart
+- Order Processing
+- Payment Gateway
+- Inventory
+- Customer Portal
+
+</td>
+<td width="33%">
+
+### 📱 SaaS
+
+- Subscription Management
+- Billing
+- Analytics
+- User Dashboards
+- API Services
+- Webhooks
+
+</td>
+</tr>
+<tr>
+<td width="33%">
+
+### 📝 CMS
+
+- Blog Posts
+- Pages
+- Media Library
+- Comments
+- Categories
+- Tags
+
+</td>
+<td width="33%">
+
+### 🎓 Education
+
+- Courses
+- Lessons
+- Quizzes
+- Student Management
+- Progress Tracking
+- Certificates
+
+</td>
+<td width="33%">
+
+### 🏥 Healthcare
+
+- Patient Records
+- Appointments
+- Prescriptions
+- Billing
+- Reports
+- Notifications
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Performance
+
+### Production Optimization
+
+```bash
+# Cache everything
+php artisan route:cache
+php artisan config:cache
+php artisan view:cache
+
+# Optimize autoloader
+composer install --optimize-autoloader --no-dev
+```
+
+### Module Performance
+
+- ⚡ **Fast Generation**: 1-3 seconds per module
+- ⚡ **Lazy Loading**: Resources loaded only when needed
+- ⚡ **Efficient Autoloading**: PSR-4 compliant
+- ⚡ **Zero Runtime Overhead**: Only used during generation
+- ⚡ **Optimized Queries**: Includes pagination and filtering
+
+---
+
+## 📊 Command Reference
+
+### Complete Command List
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `make:module` | Create module | `php artisan make:module Product --type=full` |
+| `make:module-with-relations` | Create with relationships | `php artisan make:module-with-relations OrderItem --belongs-to=Order` |
+| `list:modules` | List all modules | `php artisan list:modules` |
+| `module:dashboard` | Show dashboard | `php artisan module:dashboard` |
+| `module:health` | Check health | `php artisan module:health Product` |
+| `delete:module` | Delete module | `php artisan delete:module Product` |
+
+### Command Options
+
+| Option | Available On | Description |
+|--------|--------------|-------------|
+| `--type={full\|api\|livewire}` | make:module | Module type |
+| `--belongs-to={Model}` | make:module-with-relations | BelongsTo relationship |
+| `--has-many={Model}` | make:module-with-relations | HasMany relationship |
+| `--force` | make:module, delete:module | Skip confirmations |
+| `--no-tests` | make:module | Skip test generation |
+| `--no-seeders` | make:module | Skip seeder generation |
+| `--no-factories` | make:module | Skip factory generation |
+
+---
+
+## 🎓 Learning Path
+
+### Beginner
+
+1. **Install** the package
+2. **Create** your first module: `php artisan make:module Blog --type=full`
+3. **Run** migrations: `php artisan migrate`
+4. **Visit** in browser: `/blogs`
+5. **Explore** the generated files
+
+### Intermediate
+
+1. **Create** multiple modules
+2. **Use** relationships: `make:module-with-relations`
+3. **Customize** stubs
+4. **Monitor** with dashboard
+5. **Run** health checks
+
+### Advanced
+
+1. **Publish** configuration
+2. **Customize** all stubs
+3. **Create** custom module types
+4. **Integrate** with CI/CD
+5. **Build** complex architectures
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch: `git checkout -b feature/amazing`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push branch: `git push origin feature/amazing`
+5. Open Pull Request
 
-## License
+### Development
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
+```bash
+git clone https://github.com/phpsamurai/laravel-module-maker.git
+cd laravel-module-maker
+composer install
+```
 
-## Support
+---
 
-For support, please open an issue on the GitHub repository or contact the maintainer.
+## 📄 License
 
-## Changelog
+MIT License - see [LICENSE](LICENSE) file for details.
 
-### Version 1.0.0
+---
 
-- Initial release
-- Basic module generation
-- HMVC structure support
-- Route auto-registration
-- Test, seeder, and factory generation
-- Customizable stub templates
+## 💬 Support
+
+<div align="center">
+
+**Need Help?**
+
+[📧 Email](mailto:dev.sief.hesham@gmail.com) • [🐛 Issues](https://github.com/phpsamurai/laravel-module-maker/issues) • [📚 Wiki](https://github.com/phpsamurai/laravel-module-maker/wiki)
+
+</div>
+
+---
+
+## 📈 Changelog
+
+### Version 1.0.2 (October 2025)
+
+**🎉 Initial Release**
+
+**Core Features:**
+
+- ✅ Three module types (Full-Stack, API, Livewire)
+- ✅ Interactive CLI with type selection
+- ✅ 27 customizable stub templates
+- ✅ Complete HMVC structure generation
+
+**Automation:**
+
+- ✅ Auto-register service providers
+- ✅ Auto-update composer autoload
+- ✅ Auto-register routes (web & API)
+- ✅ Auto-register Livewire components
+- ✅ Auto-add navigation links
+- ✅ Auto-create Livewire layout
+
+**Module Management:**
+
+- ✅ List modules with statistics
+- ✅ Interactive dashboard
+- ✅ Health check system (10-point)
+- ✅ Safe module deletion
+- ✅ Automatic cleanup
+
+**Advanced Features:**
+
+- ✅ Relationship scaffolding
+- ✅ BelongsTo and HasMany support
+- ✅ Foreign key generation
+- ✅ Navigation management
+- ✅ Health monitoring
+
+**Developer Experience:**
+
+- ✅ Beautiful CLI output
+- ✅ Helpful tips and suggestions
+- ✅ Comprehensive error messages
+- ✅ Progress indicators
+- ✅ Double confirmations for safety
+
+---
+
+## 🗺️ Roadmap
+
+### Coming Soon
+
+- 🔄 Module update command
+- 📦 Module export/import
+- 🔗 Module dependency graph
+- 🌐 Multi-language support
+- 🎨 More UI frameworks (Bootstrap, Vuetify)
+- 🧩 Plugin system
+- 📊 Advanced analytics
+- 🔐 Permission scaffolding
+- 🚀 Performance dashboard
+- 📱 Mobile-first templates
+
+---
+
+## ⭐ Show Your Support
+
+<div align="center">
+
+If this package helps you build better Laravel applications:
+
+**⭐ Star on GitHub**  **💬 Leave Feedback**
+
+---
+
+**Laravel Module Maker** - Your magic wand for building modular Laravel applications.
+
+*Transform monolithic apps into modular masterpieces with a single command.*
+
+</div>

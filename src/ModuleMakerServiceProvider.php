@@ -4,6 +4,11 @@ namespace PhpSamurai\LaravelModuleMaker;
 
 use Illuminate\Support\ServiceProvider;
 use PhpSamurai\LaravelModuleMaker\Commands\MakeModuleCommand;
+use PhpSamurai\LaravelModuleMaker\Commands\DeleteModuleCommand;
+use PhpSamurai\LaravelModuleMaker\Commands\ListModulesCommand;
+use PhpSamurai\LaravelModuleMaker\Commands\ModuleHealthCommand;
+use PhpSamurai\LaravelModuleMaker\Commands\ModuleDashboardCommand;
+use PhpSamurai\LaravelModuleMaker\Commands\MakeModuleWithRelationsCommand;
 
 class ModuleMakerServiceProvider extends ServiceProvider
 {
@@ -25,6 +30,11 @@ class ModuleMakerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MakeModuleCommand::class,
+                DeleteModuleCommand::class,
+                ListModulesCommand::class,
+                ModuleHealthCommand::class,
+                ModuleDashboardCommand::class,
+                MakeModuleWithRelationsCommand::class,
             ]);
 
             $this->publishes([

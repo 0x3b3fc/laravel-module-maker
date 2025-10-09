@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use {{moduleNamespace}}\Controllers\{{module}}ApiController;
+
+/*
+|--------------------------------------------------------------------------
+| {{module}} API Routes
+|--------------------------------------------------------------------------
+|
+| Here are the API routes for the {{module}} module.
+|
+*/
+
+Route::prefix('{{modulePluralLower}}')->group(function () {
+    Route::get('/', [{{module}}ApiController::class, 'index'])->name('api.{{moduleLower}}s.index');
+    Route::post('/', [{{module}}ApiController::class, 'store'])->name('api.{{moduleLower}}s.store');
+    Route::get('/{{{moduleLower}}}', [{{module}}ApiController::class, 'show'])->name('api.{{moduleLower}}s.show');
+    Route::put('/{{{moduleLower}}}', [{{module}}ApiController::class, 'update'])->name('api.{{moduleLower}}s.update');
+    Route::delete('/{{{moduleLower}}}', [{{module}}ApiController::class, 'destroy'])->name('api.{{moduleLower}}s.destroy');
+});
+

@@ -1,0 +1,75 @@
+<?php
+
+namespace {{moduleNamespace}}\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
+
+class {{module}}ServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
+        $this->loadRoutes();
+        $this->loadViews();
+        $this->loadMigrations();
+        $this->registerLivewireComponents();
+    }
+
+    /**
+     * Register Livewire components.
+     */
+    protected function registerLivewireComponents(): void
+    {
+        Livewire::component('{{moduleLower}}s.index', \{{moduleNamespace}}\Livewire\Index::class);
+        Livewire::component('{{moduleLower}}s.create', \{{moduleNamespace}}\Livewire\Create::class);
+        Livewire::component('{{moduleLower}}s.edit', \{{moduleNamespace}}\Livewire\Edit::class);
+    }
+
+    /**
+     * Load module routes.
+     */
+    protected function loadRoutes(): void
+    {
+        // Load Livewire web routes
+        if (file_exists(__DIR__ . '/../Routes/web.php')) {
+            Route::middleware('web')
+                ->group(__DIR__ . '/../Routes/web.php');
+        }
+
+        // Load API routes with api prefix and middleware
+        if (file_exists(__DIR__ . '/../Routes/api.php')) {
+            Route::prefix('api')
+                ->middleware('api')
+                ->group(__DIR__ . '/../Routes/api.php');
+        }
+    }
+
+    /**
+     * Load module views.
+     */
+    protected function loadViews(): void
+    {
+        $this->loadViewsFrom(__DIR__ . '/../Views', '{{moduleLower}}s');
+    }
+
+    /**
+     * Load module migrations.
+     */
+    protected function loadMigrations(): void
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+    }
+}
+

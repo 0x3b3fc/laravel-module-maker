@@ -1,0 +1,20 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use {{moduleNamespace}}\Livewire\Index;
+use {{moduleNamespace}}\Livewire\Create;
+use {{moduleNamespace}}\Livewire\Edit;
+
+/*
+|--------------------------------------------------------------------------
+| {{module}} Module Routes
+|--------------------------------------------------------------------------
+|
+| Here are the routes for the {{module}} module using Livewire components.
+|
+*/
+
+Route::get('/{{modulePluralLower}}', Index::class)->name('{{moduleLower}}s.index');
+Route::get('/{{modulePluralLower}}/create', Create::class)->name('{{moduleLower}}s.create');
+Route::get('/{{modulePluralLower}}/{{{moduleLower}}}/edit', Edit::class)->name('{{moduleLower}}s.edit');
+

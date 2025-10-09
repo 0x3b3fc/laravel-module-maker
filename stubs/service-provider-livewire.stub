@@ -4,6 +4,7 @@ namespace {{moduleNamespace}}\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
 
 class {{module}}ServiceProvider extends ServiceProvider
 {
@@ -22,7 +23,17 @@ class {{module}}ServiceProvider extends ServiceProvider
     {
         $this->loadRoutes();
         $this->loadViews();
-        $this->loadMigrations();
+        $this->registerLivewireComponents();
+    }
+
+    /**
+     * Register Livewire components.
+     */
+    protected function registerLivewireComponents(): void
+    {
+        Livewire::component('{{moduleLower}}s.index', \{{moduleNamespace}}\Livewire\Index::class);
+        Livewire::component('{{moduleLower}}s.create', \{{moduleNamespace}}\Livewire\Create::class);
+        Livewire::component('{{moduleLower}}s.edit', \{{moduleNamespace}}\Livewire\Edit::class);
     }
 
     /**
@@ -30,8 +41,10 @@ class {{module}}ServiceProvider extends ServiceProvider
      */
     protected function loadRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/../Routes/api.php');
+        if (file_exists(__DIR__ . '/../Routes/web.php')) {
+            Route::middleware('web')
+                ->group(__DIR__ . '/../Routes/web.php');
+        }
     }
 
     /**
@@ -50,3 +63,4 @@ class {{module}}ServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 }
+

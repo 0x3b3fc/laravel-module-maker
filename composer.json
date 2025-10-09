@@ -1,14 +1,15 @@
 {
     "name": "phpsamurai/laravel-module-maker",
     "description": "A Laravel package for generating modular HMVC structures with artisan commands",
-    "keywords": [
-        "laravel",
-        "hmvc",
-        "modular",
-        "generator",
-        "artisan"
-    ],
+    "version": "1.0.2",
+    "keywords": ["laravel", "hmvc", "modular", "generator", "artisan", "livewire", "module-maker"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "PhpSamurai",
+            "email": "dev.sief.hesham@gmail.com"
+        }
+    ],
     "type": "library",
     "require": {
         "php": "^8.2",
@@ -17,6 +18,9 @@
     "require-dev": {
         "orchestra/testbench": "^9.0",
         "phpunit/phpunit": "^11.0"
+    },
+    "suggest": {
+        "livewire/livewire": "Required for generating Livewire-based modules (^3.0)"
     },
     "autoload": {
         "psr-4": {

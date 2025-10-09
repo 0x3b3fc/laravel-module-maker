@@ -1,0 +1,123 @@
+<?php
+
+namespace {{moduleNamespace}}\Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use {{moduleNamespace}}\Models\{{module}};
+use Livewire\Livewire;
+use {{moduleNamespace}}\Livewire\Index;
+use {{moduleNamespace}}\Livewire\Create;
+use {{moduleNamespace}}\Livewire\Edit;
+
+class {{module}}Test extends TestCase
+{
+    use RefreshDatabase;
+
+    /** @test */
+    public function it_can_display_the_index_page()
+    {
+        ${{moduleLower}}s = {{module}}::factory()->count(3)->create();
+
+        Livewire::test(Index::class)
+            ->assertSee(${{moduleLower}}s->first()->name)
+            ->assertStatus(200);
+    }
+
+    /** @test */
+    public function it_can_search_{{moduleLower}}s()
+    {
+        ${{moduleLower}}1 = {{module}}::factory()->create(['name' => 'First {{module}}']);
+        ${{moduleLower}}2 = {{module}}::factory()->create(['name' => 'Second {{module}}']);
+
+        Livewire::test(Index::class)
+            ->set('search', 'First')
+            ->assertSee('First {{module}}')
+            ->assertDontSee('Second {{module}}');
+    }
+
+    /** @test */
+    public function it_can_delete_a_{{moduleLower}}()
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        Livewire::test(Index::class)
+            ->call('delete', ${{moduleLower}}->id)
+            ->call('confirmDelete')
+            ->assertDispatched('{{moduleLower}}-deleted');
+
+        $this->assertDatabaseMissing('{{moduleSnake}}', ['id' => ${{moduleLower}}->id]);
+    }
+
+    /** @test */
+    public function it_can_display_the_create_page()
+    {
+        Livewire::test(Create::class)
+            ->assertStatus(200);
+    }
+
+    /** @test */
+    public function it_can_create_a_{{moduleLower}}()
+    {
+        Livewire::test(Create::class)
+            ->set('name', 'Test {{module}}')
+            ->set('description', 'Test Description')
+            ->set('is_active', true)
+            ->call('save')
+            ->assertRedirect(route('{{moduleLower}}s.index'));
+
+        $this->assertDatabaseHas('{{moduleSnake}}', [
+            'name' => 'Test {{module}}',
+            'description' => 'Test Description',
+        ]);
+    }
+
+    /** @test */
+    public function it_validates_required_fields_on_create()
+    {
+        Livewire::test(Create::class)
+            ->set('name', '')
+            ->call('save')
+            ->assertHasErrors(['name' => 'required']);
+    }
+
+    /** @test */
+    public function it_can_display_the_edit_page()
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        Livewire::test(Edit::class, ['{{moduleLower}}' => ${{moduleLower}}])
+            ->assertSet('name', ${{moduleLower}}->name)
+            ->assertStatus(200);
+    }
+
+    /** @test */
+    public function it_can_update_a_{{moduleLower}}()
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        Livewire::test(Edit::class, ['{{moduleLower}}' => ${{moduleLower}}])
+            ->set('name', 'Updated Name')
+            ->set('description', 'Updated Description')
+            ->call('update')
+            ->assertRedirect(route('{{moduleLower}}s.index'));
+
+        $this->assertDatabaseHas('{{moduleSnake}}', [
+            'id' => ${{moduleLower}}->id,
+            'name' => 'Updated Name',
+            'description' => 'Updated Description',
+        ]);
+    }
+
+    /** @test */
+    public function it_validates_required_fields_on_update()
+    {
+        ${{moduleLower}} = {{module}}::factory()->create();
+
+        Livewire::test(Edit::class, ['{{moduleLower}}' => ${{moduleLower}}])
+            ->set('name', '')
+            ->call('update')
+            ->assertHasErrors(['name' => 'required']);
+    }
+}
+
